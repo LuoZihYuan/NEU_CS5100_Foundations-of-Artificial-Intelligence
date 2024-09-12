@@ -71,9 +71,12 @@ class WordNGramLanguageModel:
         return prompt
 
 def main():
+
+    DATASET_PATH = "./data"
+
     training_file_paths = []
     from os import walk, path
-    for subdir, _, file_names in walk("./data"):
+    for subdir, _, file_names in walk(DATASET_PATH):
         for file_name in file_names:
             if path.splitext(file_name)[1] == ".txt":
                 training_file_paths.append("{}/{}".format(subdir, file_name))
