@@ -1,8 +1,11 @@
 import random
 
 class CharNGramLanguageModel:
-    def __init__(self, n: int) -> None:
+    def __init__(self, n: int, data: list) -> None:
         self.n = n
+        self.train(data)
+        if n > 1:
+            self.gram1 = CharNGramLanguageModel(1, data)
 
     def train(self, data: list):
         self.lm = {}
@@ -18,8 +21,11 @@ class CharNGramLanguageModel:
                 self.lm[key][character] = count / total_count
 
     def generate_character(self, prompt: str) -> str:
-        probability = self.lm[prompt[-self.n:]]
-        return random.choices([*probability.keys()], [*probability.values()])[0]
+        try:
+            probability = self.lm[prompt[-self.n:]]
+            return random.choices([*probability.keys()], [*probability.values()])[0]
+        except KeyError:
+            return self.gram1.generate_character(prompt)
     
     def generate(self, prompt: str) -> str:
         next = self.generate_character(prompt)
@@ -30,9 +36,10 @@ class CharNGramLanguageModel:
         return prompt
 
 class WordNGramLanguageModel:
-    def __init__(self, n: int, bidirection: bool = False) -> None:
+    def __init__(self, n: int, data: list, bidirection: bool = False) -> None:
         self.n = n
         self.bidirection = bidirection
+        self.train(data)
 
     def train(self, data: list):
         self.lm = {}
@@ -46,21 +53,20 @@ class WordNGramLanguageModel:
                 self.lm[" ".join(words[index:index+self.n])][words[index+self.n]] = self.lm[" ".join(words[index:index+self.n])].get(words[index+self.n], 0) + 1
                 if not self.bidirection:
                     continue
-                print("here")
                 self.lm[" ".join(reversed_words[index:index+self.n])] = self.lm.get(" ".join(reversed_words[index:index+self.n]), {})
                 self.lm[" ".join(reversed_words[index:index+self.n])][reversed_words[index+self.n]] = self.lm[" ".join(reversed_words[index:index+self.n])].get(reversed_words[index+self.n], 0) + 1
-            
-        # print(self.lm)
         for key, occurences in self.lm.items():
             total_count = sum([*occurences.values()])
             for word, count in occurences.items():
                 self.lm[key][word] = count / total_count
-        # print(self.lm)
 
     def generate_word(self, prompt: str) -> str:
-        words = prompt.split()
-        probability = self.lm[" ".join(words[-self.n:])]
-        return random.choices([*probability.keys()], [*probability.values()])[0]
+        try:
+            words = prompt.split()
+            probability = self.lm[" ".join(words[-self.n:])]
+            return random.choices([*probability.keys()], [*probability.values()])[0]
+        except KeyError:
+            return random.choice([*self.lm[random.choice([*self.lm.keys()])].keys()])
     
     def generate(self, prompt: str) -> str:
         next = self.generate_word(prompt)
@@ -89,25 +95,15 @@ def main():
     test_char_ns = [3, 5, 20, 50]
     prompt = input("Input prompt: ")
     for test_char_n in test_char_ns:
-        model = CharNGramLanguageModel(test_char_n)
-        model.train(training_data)
-        try:
-            result = repr(model.generate(prompt))
-        except KeyError:
-            result = ""
-        print("CharNGram({}): {}".format(test_char_n, result))
+        model = CharNGramLanguageModel(test_char_n, training_data)
+        print("CharNGram({}): {}".format(test_char_n, repr(model.generate(prompt))))
     
     test_word_ns = [1, 2, 3, 5]
     test_bidirections = [False, True]
     for test_bidirection in test_bidirections:
         for test_word_n in test_word_ns:
-            model = WordNGramLanguageModel(test_word_n)
-            model.train(training_data)
-            try:
-                result = repr(model.generate(prompt))
-            except KeyError:
-                result = ""
-            print("WordNGram({}, {}): {}".format(test_word_n, test_bidirection, result))
+            model = WordNGramLanguageModel(test_word_n, training_data, test_bidirection)
+            print("WordNGram({}, {}): {}".format(test_word_n, test_bidirection, repr(model.generate(prompt))))
 
 if __name__ == "__main__":
     main()
