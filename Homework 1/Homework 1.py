@@ -78,7 +78,7 @@ class WordNGramLanguageModel:
 
 def main():
 
-    DATASET_PATH = "./data"
+    DATASET_PATH = "./data/BBC News Summary/"
 
     training_file_paths = []
     from os import walk, path
@@ -89,7 +89,7 @@ def main():
     
     training_data = []
     for training_file_path in training_file_paths:        
-        with open(training_file_path) as training_file:
+        with open(training_file_path, errors='ignore') as training_file:
             training_data += training_file.readlines()
     
     test_char_ns = [3, 5, 20, 50]
