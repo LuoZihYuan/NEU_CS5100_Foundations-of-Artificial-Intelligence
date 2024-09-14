@@ -19,6 +19,7 @@ class CharNGramLanguageModel:
             total_count = sum([*occurences.values()])
             for character, count in occurences.items():
                 self.lm[key][character] = count / total_count
+        return self
 
     def generate_character(self, prompt: str) -> str:
         try:
@@ -59,6 +60,7 @@ class WordNGramLanguageModel:
             total_count = sum([*occurences.values()])
             for word, count in occurences.items():
                 self.lm[key][word] = count / total_count
+        return self
 
     def generate_word(self, prompt: str) -> str:
         try:
@@ -78,7 +80,7 @@ class WordNGramLanguageModel:
 
 def main():
 
-    DATASET_PATH = "./data/BBC News Summary/"
+    DATASET_PATH = "./data/"
 
     training_file_paths = []
     from os import walk, path
