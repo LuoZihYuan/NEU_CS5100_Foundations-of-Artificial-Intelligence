@@ -6,6 +6,7 @@ KFOLD = 5
 
 def eval_clf(clf:BaseEstimator, grid:dict, train_x: np.ndarray, train_y:np.ndarray, test_x:np.ndarray, test_y:np.ndarray) -> None:
     
+    from textwrap import dedent
     from sklearn.metrics import make_scorer, f1_score, precision_score, recall_score, confusion_matrix
     from sklearn.model_selection import GridSearchCV
     
@@ -16,10 +17,28 @@ def eval_clf(clf:BaseEstimator, grid:dict, train_x: np.ndarray, train_y:np.ndarr
     best_clf = clf_cv.best_estimator_
     guess_y = best_clf.predict(test_x)
 
-    print(f1_score(test_y, guess_y, average='weighted', zero_division=0))
-    print(precision_score(test_y, guess_y, average='weighted', zero_division=0))
-    print(recall_score(test_y, guess_y, average='weighted', zero_division=0))
-    print(confusion_matrix(test_y, guess_y))
+    estimator_name = type(clf).__name__
+    with open("{}.txt".format(estimator_name), "w") as reportfile:
+        reportfile.writelines("{}\n".format(estimator_name))
+        reportfile.writelines(dedent("""
+                              < Best Parameters >
+                              """
+        ))
+        for name, value in clf_cv.best_params_.items():
+            reportfile.writelines("{}: {}\n".format(name, value))
+        reportfile.writelines(dedent("""
+                           < Score >
+                           F1: {}
+                           Precision: {}
+                           Recall: {}
+                           
+                           < Confusion Matrix >
+                           """.format(f1_score(test_y, guess_y, average='weighted', zero_division=0),
+                                      precision_score(test_y, guess_y, average='weighted', zero_division=0),
+                                      recall_score(test_y, guess_y, average='weighted', zero_division=0))
+        ))
+        for row in confusion_matrix(test_y, guess_y):
+            reportfile.writelines(", ".join(map(str, row.tolist())) + "\n")
 
 def classification_task():
     
@@ -65,9 +84,9 @@ def classification_task():
                     (48, 32), (96, 48), (144, 72),  # Two layers
                     (48, 32, 16), (96, 48, 24), (144, 72, 36),  # Three layers
                 ],
-                'solver': ['adam', 'sgd'],  # Test different solvers
-                'alpha': [1e-4, 1e-3, 1e-2],  # L2 regularization strength
-                'learning_rate': ['constant', 'adaptive'],  # Learning rate schedule
+                'solver': ['adam', 'sgd'],
+                'alpha': [1e-4, 1e-3, 1e-2],
+                'learning_rate': ['constant', 'adaptive'],
             }
         ), (
             KNeighborsClassifier(),
