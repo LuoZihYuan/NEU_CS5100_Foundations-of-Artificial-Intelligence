@@ -11,6 +11,13 @@ def load_cats(size:int = 48) -> tuple:
     y = data[:, -1]
     return x, y
 
+def load_bears(size:int = 48) -> tuple:
+    cats_path = resources.files(DATA_MODULE) / "bears/bears_{}.csv".format(size)
+    data = np.genfromtxt(cats_path, delimiter=',', dtype=np.uint8)
+    x = data[:, :-1]
+    y = data[:, -1]
+    return x, y
+
 def load_age(size:int = 48) -> tuple:
     age_path = resources.files(DATA_MODULE) / "age/age_{}.csv".format(size)
     data = np.genfromtxt(age_path, delimiter=',', dtype=np.uint8)
