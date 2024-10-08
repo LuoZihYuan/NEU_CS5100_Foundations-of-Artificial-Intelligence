@@ -42,7 +42,7 @@ def find_edit_path_bfs(start_word: str, end_word: str) -> list[str]:
       nxt = WordPathNode(next_word, current)
       if nxt not in history:
         frontier.append(nxt)
-  return []
+  return None
 
 def find_edit_path_dfs(start_word: str, end_word: str, limit: int=0) -> list[str]:
   history: set[WordPathNode] = set()
@@ -58,11 +58,11 @@ def find_edit_path_dfs(start_word: str, end_word: str, limit: int=0) -> list[str
       nxt = WordPathNode(next_word, current)
       if nxt not in history:
         frontier.append(nxt)
-  return []
+  return None
 
 def find_edit_path_iterative_deepening(start_word: str, end_word: str) -> list[str]:
   i = 1
-  while (result:=find_edit_path_dfs(start_word, end_word, i)) == []:
+  while not (result:=find_edit_path_dfs(start_word, end_word, i)):
     i+=1
   return result
 
@@ -88,7 +88,7 @@ def find_edit_path_A_star_search(start_word: str, end_word: str):
       nxt = WordPathNode(next_word, current)
       if nxt not in history:
         frontier.append(nxt)
-  return []
+  return None
 
 def hamming_distance(word1: str, word2: str) -> int:
   return sum(c1 != c2 for c1, c2 in zip(word1, word2))
@@ -116,7 +116,7 @@ def main():
         single_char_apart[word1].add(word2)
         single_char_apart[word2].add(word1)
   
-  print(find_edit_path_A_star_search(start_word, end_word))
+  print(find_edit_path_iterative_deepening(start_word, end_word))
     
 if __name__ == "__main__":
   main()

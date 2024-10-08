@@ -6,12 +6,29 @@
     - How efficient (time and space) is this algorithm for finding paths between words that are fairly similar (>50% characters in common)?
     - How efficient (time and space) is this algorithm for finding paths between words that are not similar (<50% characters in common)?
     - How efficient (time and space) is this algorithm for determining that there is no path between the two words?
-    > | Algorithm | Shortest Guaranteed? | Similar Time | Similar Space | Unsimilar Time | Unsimilar Space | Unsolvable Time | Unsolvable Space |
-    > |:---------:|:--------------------:|:------------:|:-------------:|:--------------:|:---------------:|:---------------:|:----------------:|
-    > | BFS | Yes | Efficient | Inefficient | Efficient | Inefficient | Inefficient | Inefficient |
-    > | DFS | No  | Inefficient | Efficient | Inefficient | Efficient | Inefficient | Efficient |
-    > | IDS | Yes | Efficient | Efficient | Efficient | Efficient | Inefficient | Efficient |
-    > | A*S | Yes | Depend on Heuristic | Inefficient | Depend on Heuristic | Inefficient | Inefficient | Inefficient |
+    >1. BFS
+        >- Shortest path guarateed? Yes
+        >- Similar words? Time more efficient than DFS, space less efficient than DFS, IDS.
+        >- Unsimilar words? Time more efficient than DFS, space less efficient than DFS, IDS.
+        >- Unsolvable words? Time as inefficient as DFS, BFS, IDS, and A*s, since all algorithms have to go through every node.
+
+    >2.  DFS
+        >- Shortest path guarateed? No
+        >- Similar words? Time less efficient than BFS, space more efficient than BFS, A*S.
+        >- Unsimilar words? Time less efficient than BFS, space more efficient than BFS, A*S.
+        >- Unsolvable words? Time as inefficient as DFS, BFS, IDS, and A*s, since all algorithms have to go through every node.
+
+    >3. IDS
+        >- Shortest path guarateed? Yes
+        >- Similar words? Time more efficient than DFS, space as efficient as DFS.
+        >- Unsimilar words? Time more efficient than DFS, space as efficient as DFS.
+        >- Unsolvable words? Time as inefficient as DFS, BFS, IDS, and A*s, since all algorithms have to go through every node.
+
+    >4. A*S
+        >- Shortest path guarateed? Yes
+        >- Similar words? Time complexity depends on heuristic algorithm, bu usually more efficient than DFS. Space less efficient the DFS, IDS.
+        >- Unsimilar words? Time complexity depends on heuristic algorithm, bu usually more efficient than DFS. Space less efficient the DFS, IDS.
+        >- Unsolvable words? Time as inefficient as DFS, BFS, IDS, and A*s, since all algorithms have to go through every node.
 
 2. For the A* search, how did you choose an appropriate heuristic?
     > I compared `Hamming Distance`, `Levenshtein Distance`, `Matching Prefix Length`, and `Jaccard Similarity`. First, I ruled out the last two distances, since they both ignored certain informations in the compared strings, resulting in a much similar heuristic. Aferwards, I chose Hamming Distance over Levenshtein Distance, since they give the same heuristic when the start word and end word are of the same length, and Levenshtein Distance takes a much longer time to calculate.
